@@ -68,7 +68,30 @@ echo -n 'O'
 tput sgr0
 tput cup $((rows - 1)) 0
 
-# restore cursor when exiting
+ball_x=$mid_x
+ball_y=$mid_y
+ball_dx=1
+ball_dy=1
+ball_char="O"
 trap "tput sgr0; tput cnorm; clear; exit" SIGINT
-read -n 1 -s -r -p "press any key to exit..."
-tput cnorm
+
+while true; do
+  tput cup $ball_y $ball_x
+  echo -n ' '
+
+  ball_x=$((ball_x + ball_dx))
+  ball_y=$((ball_y + ball_dy))
+
+  # bounce
+  if ((ball_y <= 1 || ball_y >= rows - 2)); then
+    ball_dy=$((-ball_dy))
+  fi
+  if ((ball_x <= 1 || ball_x >= cols - 2)); then
+    ball_dx=$((-ball_dx))
+  fi
+
+  tput cup $ball_y $ball_x
+  echo -n "$ball_char"
+
+  sleep 0.05
+done
